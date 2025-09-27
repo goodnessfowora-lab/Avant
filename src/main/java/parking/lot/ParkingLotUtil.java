@@ -12,10 +12,14 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class ParkingLotUtil {
     public static List<ParkingSpot> findParkingSpot(Vehicle vehicle, Map<String, List<ParkingSpot>> parkingSpotMap) {
+        Objects.requireNonNull(vehicle, "vehicle must not be null");
+        Objects.requireNonNull(parkingSpotMap, "parkingSpotMap must not be null");
+
         if (VehicleType.CAR.equals(vehicle.getType())) {
             return findSingleAvailableSpot(ParkingLotConstants.REGULAR, parkingSpotMap);
         } else if (VehicleType.MOTORCYCLE.equals(vehicle.getType())) {
@@ -27,6 +31,8 @@ public final class ParkingLotUtil {
     }
 
     public static ParkingSpot createSpot(String spotType, String spotId) {
+        Objects.requireNonNull(spotType, "spotType must not be null");
+        Objects.requireNonNull(spotId, "spotId must not be null");
         return switch (spotType) {
             case ParkingLotConstants.REGULAR -> new RegularSpot(spotId);
             case ParkingLotConstants.COMPACT -> new CompactSpot(spotId);
@@ -49,7 +55,7 @@ public final class ParkingLotUtil {
                         .stream()
                         .filter(ParkingSpot::isAvailable)
                         .collect(Collectors.groupingBy(
-                                spot -> spot.getParkingSpotId().split("-")[0],
+                                spot -> extractRowFromSpotId(spot.getParkingSpotId()),
                                 LinkedHashMap::new,
                                 Collectors.toList()
                         ));
@@ -65,6 +71,12 @@ public final class ParkingLotUtil {
             }
         }
         return null;
+    }
+
+    private static String extractRowFromSpotId(String spotId) {
+        String[] parts = spotId.split("-");
+        if (parts.length != 2) throw new IllegalArgumentException("Invalid spotId: " + spotId);
+        return parts[0];
     }
 
     private static int extractSpotNum(ParkingSpot spot) {

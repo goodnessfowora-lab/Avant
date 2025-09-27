@@ -25,6 +25,9 @@ public final class ParkingLotSummary {
             long vanCount,
             Map<String, RowStatus> byRow
     ) {
+        if (totalSpots < 0 || availableSpots < 0 || occupiedSpots < 0 || vanCount < 0) {
+            throw new IllegalArgumentException("Counts cannot be negative");
+        }
         this.totalSpots = totalSpots;
         this.availableSpots = availableSpots;
         this.occupiedSpots = occupiedSpots;
@@ -50,6 +53,9 @@ public final class ParkingLotSummary {
         private final long occupied;
 
         public SpotTypeStatus(long total, long available, long occupied) {
+            if (total < 0 || available < 0 || occupied < 0) {
+                throw new IllegalArgumentException("Counts cannot be negative");
+            }
             this.total = total;
             this.available = available;
             this.occupied = occupied;
@@ -66,6 +72,9 @@ public final class ParkingLotSummary {
         private final long occupied;
 
         public RowStatus(long total, long available, long occupied) {
+            if (total < 0 || available < 0 || occupied < 0) {
+                throw new IllegalArgumentException("Counts cannot be negative");
+            }
             this.total = total;
             this.available = available;
             this.occupied = occupied;

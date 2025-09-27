@@ -4,8 +4,10 @@ import parking.lot.ParkingLot;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class ParkingLotApplication {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
+
         ParkingLot lot = new ParkingLot(4, "REGULAR, REGULAR, COMPACT");
+        System.out.println("Parking lot created with total spots: " + lot.getParkingLotSize());
+        System.out.println();
+        lot.printLotSummary();
     }
 }
