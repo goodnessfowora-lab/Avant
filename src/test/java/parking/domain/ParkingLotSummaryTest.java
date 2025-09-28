@@ -1,6 +1,8 @@
 package parking.domain;
 
 import org.junit.Test;
+import parking.enums.ParkingSpotType;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -13,8 +15,8 @@ public class ParkingLotSummaryTest {
 
     @Test
     public void testConstructorAndGetters() {
-        Map<String, ParkingLotSummary.SpotTypeStatus> byType = Map.of(
-                "COMPACT", new ParkingLotSummary.SpotTypeStatus(10, 4, 6)
+        Map<ParkingSpotType, ParkingLotSummary.SpotTypeStatus> byType = Map.of(
+                ParkingSpotType.COMPACT, new ParkingLotSummary.SpotTypeStatus(10, 4, 6)
         );
         Map<String, ParkingLotSummary.RowStatus> byRow = Map.of(
                 "A", new ParkingLotSummary.RowStatus(5, 2, 3)
@@ -36,8 +38,8 @@ public class ParkingLotSummaryTest {
 
     @Test
     public void testImmutabilityOfByTypeAndByRow() {
-        Map<String, ParkingLotSummary.SpotTypeStatus> byType = new HashMap<>();
-        byType.put("LARGE", new ParkingLotSummary.SpotTypeStatus(5, 1, 4));
+        Map<ParkingSpotType, ParkingLotSummary.SpotTypeStatus> byType = new HashMap<>();
+        byType.put(ParkingSpotType.REGULAR, new ParkingLotSummary.SpotTypeStatus(5, 1, 4));
         Map<String, ParkingLotSummary.RowStatus> byRow = new HashMap<>();
         byRow.put("B", new ParkingLotSummary.RowStatus(3, 0, 3));
 
@@ -45,7 +47,7 @@ public class ParkingLotSummaryTest {
                 10, 1, 9, byType, false, false, 1, byRow
         );
 
-        assertThrows(UnsupportedOperationException.class, () -> summary.getByType().put("SMALL", new ParkingLotSummary.SpotTypeStatus(2, 2, 0)));
+        assertThrows(UnsupportedOperationException.class, () -> summary.getByType().put(ParkingSpotType.COMPACT, new ParkingLotSummary.SpotTypeStatus(2, 2, 0)));
         assertThrows(UnsupportedOperationException.class, () -> summary.getByRow().put("C", new ParkingLotSummary.RowStatus(2, 2, 0)));
     }
 
@@ -73,7 +75,7 @@ public class ParkingLotSummaryTest {
 
     @Test
     public void testNullByRowThrowsException() {
-        Map<String, ParkingLotSummary.SpotTypeStatus> byType = Map.of();
+        Map<ParkingSpotType, ParkingLotSummary.SpotTypeStatus> byType = Map.of();
         assertThrows(NullPointerException.class, () -> new ParkingLotSummary(1, 1, 0, byType, false, true, 0, null));
     }
 
@@ -88,7 +90,7 @@ public class ParkingLotSummaryTest {
 
     @Test
     public void testNegativeValuesRejected() {
-        Map<String, ParkingLotSummary.SpotTypeStatus> byType = Map.of();
+        Map<ParkingSpotType, ParkingLotSummary.SpotTypeStatus> byType = Map.of();
         Map<String, ParkingLotSummary.RowStatus> byRow = Map.of();
         assertThrows(IllegalArgumentException.class, () -> new ParkingLotSummary(-1, 0, 0, byType, false, true, 0, byRow));
         assertThrows(IllegalArgumentException.class, () -> new ParkingLotSummary(1, -1, 0, byType, false, true, 0, byRow));
@@ -100,8 +102,8 @@ public class ParkingLotSummaryTest {
 
     @Test
     public void testOriginalMapsModificationDoesNotAffectSummary() {
-        Map<String, ParkingLotSummary.SpotTypeStatus> byType = new HashMap<>();
-        byType.put("COMPACT", new ParkingLotSummary.SpotTypeStatus(1, 1, 0));
+        Map<ParkingSpotType, ParkingLotSummary.SpotTypeStatus> byType = new HashMap<>();
+        byType.put(ParkingSpotType.COMPACT, new ParkingLotSummary.SpotTypeStatus(1, 1, 0));
         Map<String, ParkingLotSummary.RowStatus> byRow = new HashMap<>();
         byRow.put("A", new ParkingLotSummary.RowStatus(1, 1, 0));
 
@@ -109,11 +111,10 @@ public class ParkingLotSummaryTest {
                 1, 1, 0, byType, false, false, 0, byRow
         );
 
-        byType.put("LARGE", new ParkingLotSummary.SpotTypeStatus(2, 2, 0));
+        byType.put(ParkingSpotType.REGULAR, new ParkingLotSummary.SpotTypeStatus(2, 2, 0));
         byRow.put("B", new ParkingLotSummary.RowStatus(2, 2, 0));
 
-        assertFalse(summary.getByType().containsKey("LARGE"));
+        assertFalse(summary.getByType().containsKey(ParkingSpotType.REGULAR));
         assertFalse(summary.getByRow().containsKey("B"));
     }
-
 }

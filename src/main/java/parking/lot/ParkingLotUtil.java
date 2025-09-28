@@ -1,11 +1,9 @@
 package parking.lot;
 
 import parking.domain.Vehicle;
-import parking.enums.ParkingLotConstants;
+import parking.enums.ParkingSpotType;
 import parking.enums.VehicleType;
-import parking.spot.CompactSpot;
-import parking.spot.ParkingSpot;
-import parking.spot.RegularSpot;
+import parking.domain.ParkingSpot;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,32 +13,25 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static parking.enums.ParkingSpotType.COMPACT;
+import static parking.enums.ParkingSpotType.REGULAR;
+
 public final class ParkingLotUtil {
-    public static List<ParkingSpot> findParkingSpot(Vehicle vehicle, Map<String, List<ParkingSpot>> parkingSpotMap) {
+    public static List<ParkingSpot> findParkingSpot(Vehicle vehicle, Map<ParkingSpotType, List<ParkingSpot>> parkingSpotMap) {
         Objects.requireNonNull(vehicle, "vehicle must not be null");
         Objects.requireNonNull(parkingSpotMap, "parkingSpotMap must not be null");
 
         if (VehicleType.CAR.equals(vehicle.getType())) {
-            return findSingleAvailableSpot(ParkingLotConstants.REGULAR, parkingSpotMap);
+            return findSingleAvailableSpot(REGULAR, parkingSpotMap);
         } else if (VehicleType.MOTORCYCLE.equals(vehicle.getType())) {
-            List<ParkingSpot> spot = findSingleAvailableSpot(ParkingLotConstants.COMPACT, parkingSpotMap);
-            return spot != null ? spot : findSingleAvailableSpot(ParkingLotConstants.REGULAR, parkingSpotMap);
+            List<ParkingSpot> spot = findSingleAvailableSpot(COMPACT, parkingSpotMap);
+            return spot != null ? spot : findSingleAvailableSpot(REGULAR, parkingSpotMap);
         } else {
             return findTwoAdjacentSpots(parkingSpotMap);
         }
     }
 
-    public static ParkingSpot createSpot(String spotType, String spotId) {
-        Objects.requireNonNull(spotType, "spotType must not be null");
-        Objects.requireNonNull(spotId, "spotId must not be null");
-        return switch (spotType) {
-            case ParkingLotConstants.REGULAR -> new RegularSpot(spotId);
-            case ParkingLotConstants.COMPACT -> new CompactSpot(spotId);
-            default -> throw new IllegalArgumentException("Unknown spot type: " + spotType);
-        };
-    }
-
-    private static List<ParkingSpot> findSingleAvailableSpot(String lotType, Map<String, List<ParkingSpot>> parkingSpotMap) {
+    private static List<ParkingSpot> findSingleAvailableSpot(ParkingSpotType lotType, Map<ParkingSpotType, List<ParkingSpot>> parkingSpotMap) {
         return parkingSpotMap.getOrDefault(lotType, Collections.emptyList())
                 .stream()
                 .filter(ParkingSpot::isAvailable)
@@ -49,9 +40,9 @@ public final class ParkingLotUtil {
                 .orElse(null);
     }
 
-    private static List<ParkingSpot> findTwoAdjacentSpots(Map<String, List<ParkingSpot>> parkingSpotMap) {
+    private static List<ParkingSpot> findTwoAdjacentSpots(Map<ParkingSpotType, List<ParkingSpot>> parkingSpotMap) {
         Map<String, List<ParkingSpot>> availableSpotsMap =
-                parkingSpotMap.getOrDefault(ParkingLotConstants.REGULAR, Collections.emptyList())
+                parkingSpotMap.getOrDefault(REGULAR, Collections.emptyList())
                         .stream()
                         .filter(ParkingSpot::isAvailable)
                         .collect(Collectors.groupingBy(

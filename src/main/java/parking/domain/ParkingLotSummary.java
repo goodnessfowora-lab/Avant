@@ -1,5 +1,7 @@
 package parking.domain;
 
+import parking.enums.ParkingSpotType;
+
 import java.util.Map;
 
 /**
@@ -9,7 +11,7 @@ public final class ParkingLotSummary {
     private final long totalSpots;
     private final long availableSpots;
     private final long occupiedSpots;
-    private final Map<String, SpotTypeStatus> byType;
+    private final Map<ParkingSpotType, SpotTypeStatus> byType;
     private final boolean isFull;
     private final boolean isEmpty;
     private final long vanCount;
@@ -19,7 +21,7 @@ public final class ParkingLotSummary {
             long totalSpots,
             long availableSpots,
             long occupiedSpots,
-            Map<String, SpotTypeStatus> byType,
+            Map<ParkingSpotType, SpotTypeStatus> byType,
             boolean isFull,
             boolean isEmpty,
             long vanCount,
@@ -41,7 +43,7 @@ public final class ParkingLotSummary {
     public long getTotalSpots() { return totalSpots; }
     public long getAvailableSpots() { return availableSpots; }
     public long getOccupiedSpots() { return occupiedSpots; }
-    public Map<String, SpotTypeStatus> getByType() { return byType; }
+    public Map<ParkingSpotType, SpotTypeStatus> getByType() { return byType; }
     public boolean isFull() { return isFull; }
     public boolean isEmpty() { return isEmpty; }
     public long getVanCount() { return vanCount; }

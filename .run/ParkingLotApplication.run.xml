@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ParkingLotApplication" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="ParkingLotApplication" />
+    <module name="Avant" />
+    <option name="PROGRAM_PARAMETERS" value="5 &quot;COMPACT, REGULAR, COMPACT&quot; COMPACT_REGULAR LIVE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
