@@ -1,6 +1,6 @@
 package parking.domain;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import parking.enums.VehicleType;
 import parking.exception.DoubleParkingException;
 

@@ -1,6 +1,6 @@
 package parking.lot;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import parking.domain.Vehicle;
 import parking.enums.ParkingSpotType;
 import parking.enums.VehicleType;
