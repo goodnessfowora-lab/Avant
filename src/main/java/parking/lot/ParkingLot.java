@@ -30,7 +30,7 @@ public class ParkingLot {
             throw new ParkingUnavailableException("No available spots for vehicle: " + identifier);
         }
 
-        return parkingSpots.getFirst();
+        return parkingSpots.get(0);
     }
 
     public void removeVehicle(String identifier) {

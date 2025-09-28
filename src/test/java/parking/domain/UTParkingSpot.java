@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static parking.enums.ParkingSpotType.COMPACT;
 import static parking.enums.ParkingSpotType.REGULAR;
 
-public class ParkingSpotTest {
+public class UTParkingSpot {
 
     @Test
     public void testSpotIsAvailableInitially() {

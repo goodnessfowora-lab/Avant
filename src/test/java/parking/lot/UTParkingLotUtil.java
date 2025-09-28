@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class ParkingLotUtilTest {
+public class UTParkingLotUtil {
 
     @Test
     public void testCreateSpot() {
@@ -36,7 +36,7 @@ public class ParkingLotUtilTest {
         List<ParkingSpot> result = ParkingLotUtil.findParkingSpot(car, map);
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("R1-1", result.getFirst().getParkingSpotId());
+        assertEquals("R1-1", result.get(0).getParkingSpotId());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class ParkingLotUtilTest {
 
         List<ParkingSpot> result = ParkingLotUtil.findParkingSpot(moto, map);
         assertNotNull(result);
-        assertEquals("R1-2", result.getFirst().getParkingSpotId());
+        assertEquals("R1-2", result.get(0).getParkingSpotId());
     }
 
     @Test
