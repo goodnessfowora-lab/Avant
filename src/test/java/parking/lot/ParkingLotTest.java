@@ -10,7 +10,7 @@ import parking.exception.IllegalParkingLotAdminException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UTParkingLot {
+public class ParkingLotTest {
 
     private ParkingLot lot;
 

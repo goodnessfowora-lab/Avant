@@ -1,25 +1,32 @@
-package parking.lot;
+package parking.lot.strategy;
 
 import parking.domain.Vehicle;
 import parking.enums.ParkingSpotType;
 import parking.enums.VehicleType;
 import parking.domain.ParkingSpot;
+import parking.exception.InvalidParkingSpotIdException;
+import parking.exception.ParkingUnavailableException;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static parking.enums.ParkingSpotType.COMPACT;
 import static parking.enums.ParkingSpotType.REGULAR;
 
-public final class ParkingLotUtil {
-    public static List<ParkingSpot> findParkingSpot(Vehicle vehicle, Map<ParkingSpotType, List<ParkingSpot>> parkingSpotMap) {
-        Objects.requireNonNull(vehicle, "vehicle must not be null");
-        Objects.requireNonNull(parkingSpotMap, "parkingSpotMap must not be null");
+public class RegularCompactAllocationStrategy implements SpotAllocationStrategy {
+
+    @Override
+    public List<ParkingSpot> findParkingSpot(Vehicle vehicle, Map<ParkingSpotType, List<ParkingSpot>> parkingSpotMap) {
+        if (vehicle == null) {
+            throw new ParkingUnavailableException("Vehicle is null, cannot allocate parking spot");
+        }
+        if (parkingSpotMap == null) {
+            throw new ParkingUnavailableException("parkingSpotMap must not be null");
+        }
 
         if (VehicleType.CAR.equals(vehicle.getType())) {
             return findSingleAvailableSpot(REGULAR, parkingSpotMap);
@@ -31,7 +38,7 @@ public final class ParkingLotUtil {
         }
     }
 
-    private static List<ParkingSpot> findSingleAvailableSpot(ParkingSpotType lotType, Map<ParkingSpotType, List<ParkingSpot>> parkingSpotMap) {
+    private List<ParkingSpot> findSingleAvailableSpot(ParkingSpotType lotType, Map<ParkingSpotType, List<ParkingSpot>> parkingSpotMap) {
         return parkingSpotMap.getOrDefault(lotType, Collections.emptyList())
                 .stream()
                 .filter(ParkingSpot::isAvailable)
@@ -40,13 +47,19 @@ public final class ParkingLotUtil {
                 .orElse(null);
     }
 
-    private static List<ParkingSpot> findTwoAdjacentSpots(Map<ParkingSpotType, List<ParkingSpot>> parkingSpotMap) {
+    private List<ParkingSpot> findTwoAdjacentSpots(Map<ParkingSpotType, List<ParkingSpot>> parkingSpotMap)  {
         Map<String, List<ParkingSpot>> availableSpotsMap =
                 parkingSpotMap.getOrDefault(REGULAR, Collections.emptyList())
                         .stream()
                         .filter(ParkingSpot::isAvailable)
                         .collect(Collectors.groupingBy(
-                                spot -> extractRowFromSpotId(spot.getParkingSpotId()),
+                                spot -> {
+                                    try {
+                                        return extractRowFromSpotId(spot.getParkingSpotId());
+                                    } catch (InvalidParkingSpotIdException e) {
+                                        throw new ParkingUnavailableException(e.getMessage(), e);
+                                    }
+                                },
                                 LinkedHashMap::new,
                                 Collectors.toList()
                         ));
@@ -64,13 +77,13 @@ public final class ParkingLotUtil {
         return null;
     }
 
-    private static String extractRowFromSpotId(String spotId) {
+    private String extractRowFromSpotId(String spotId) throws InvalidParkingSpotIdException {
         String[] parts = spotId.split("-");
-        if (parts.length != 2) throw new IllegalArgumentException("Invalid spotId: " + spotId);
+        if (parts.length != 2) throw new InvalidParkingSpotIdException("Invalid spotId: " + spotId);
         return parts[0];
     }
 
-    private static int extractSpotNum(ParkingSpot spot) {
+    private int extractSpotNum(ParkingSpot spot) {
         return Integer.parseInt(spot.getParkingSpotId().split("-")[1]);
     }
 }

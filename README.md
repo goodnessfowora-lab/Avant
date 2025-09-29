@@ -32,7 +32,7 @@ This project implements a parking lot management system as part of the Avant tak
 - CLI demo application for live demonstration of features (program arguments for running included in repo. See "Run Application" section below)
 
 ## Assumptions
-- The parking lot has a fixed number of rows and spots per row.
+- The parking lot has a fixed number of rows and spots per row, the product of which would never exceed long maximum.
 - Spot allocation is done on a first-come, first-served basis.
 - The system does not handle payments or time tracking.
 - There are only three vehicle types supported by the parking lot: Motorcycle, Car, and Van.

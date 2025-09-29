@@ -2,10 +2,10 @@ package parking.lot;
 
 import parking.enums.ParkingLotAdminType;
 import parking.enums.VehicleType;
+import parking.domain.ParkingSpot;
 import parking.exception.DoubleParkingException;
 import parking.exception.IllegalParkingLotAdminException;
 import parking.exception.IllegalSpotTypeException;
-import parking.domain.ParkingSpot;
 import parking.exception.ParkingUnavailableException;
 
 import java.util.List;

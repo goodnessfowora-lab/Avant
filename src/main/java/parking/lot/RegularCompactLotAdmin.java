@@ -7,6 +7,9 @@ import parking.enums.ParkingSpotType;
 import parking.enums.VehicleType;
 import parking.exception.DoubleParkingException;
 import parking.exception.IllegalSpotTypeException;
+import parking.exception.ParkingUnavailableException;
+import parking.lot.strategy.RegularCompactAllocationStrategy;
+import parking.lot.strategy.SpotAllocationStrategy;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +21,7 @@ import java.util.Map;
 public class RegularCompactLotAdmin implements ParkingLotAdmin {
     private final Map<ParkingSpotType, List<ParkingSpot>> parkingSpotTypeMap; // spots grouped by type (REGULAR, COMPACT, etc.)
     private final Map<String, List<ParkingSpot>> vehicleSpotsMap;   // mapping of vehicles to the spots they occupy
+    private final SpotAllocationStrategy allocationStrategy;
 
     /**
      * Construct a parking lot with a fixed number of rows and a sequence of spot types per row.
@@ -26,6 +30,7 @@ public class RegularCompactLotAdmin implements ParkingLotAdmin {
     public RegularCompactLotAdmin(int numOfRows, String rowSequence) throws IllegalSpotTypeException {
         this.parkingSpotTypeMap = new HashMap<>();
         this.vehicleSpotsMap = new HashMap<>();
+        this.allocationStrategy = new RegularCompactAllocationStrategy();
 
         String[] spotArrangement = rowSequence.split(",");
         ParkingSpotType[] validSpotArrangement = new ParkingSpotType[spotArrangement.length];
@@ -59,7 +64,7 @@ public class RegularCompactLotAdmin implements ParkingLotAdmin {
      */
 
     @Override
-    public List<ParkingSpot> parkVehicle(String identifier, VehicleType vehicleType) throws DoubleParkingException {
+    public List<ParkingSpot> parkVehicle(String identifier, VehicleType vehicleType) throws DoubleParkingException, ParkingUnavailableException {
         // If already parked, return existing allocation
         if (vehicleSpotsMap.containsKey(identifier)) {
             return vehicleSpotsMap.get(identifier);
@@ -68,7 +73,7 @@ public class RegularCompactLotAdmin implements ParkingLotAdmin {
         Vehicle vehicle = new Vehicle(identifier, vehicleType);
 
         // Find available spots for the vehicle
-        List<ParkingSpot> parkingSpots = ParkingLotUtil.findParkingSpot(vehicle, parkingSpotTypeMap);
+        List<ParkingSpot> parkingSpots = allocationStrategy.findParkingSpot(vehicle, parkingSpotTypeMap);
         if (parkingSpots != null) {
             // Mark each spot as occupied
             for (ParkingSpot parkingSpot : parkingSpots) {

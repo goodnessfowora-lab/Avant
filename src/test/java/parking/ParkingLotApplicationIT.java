@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ITParkingLotApplication {
+class ParkingLotApplicationIT {
 
     private static final String JAVA_CMD = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
     private static final String MAIN_CLASS = "ParkingLotApplication";

@@ -1,10 +1,10 @@
-import parking.lot.ParkingLot;
-import parking.enums.ParkingLotAdminType;
+import parking.exception.DoubleParkingException;
 import parking.exception.IllegalParkingLotAdminException;
 import parking.exception.IllegalSpotTypeException;
-import parking.enums.VehicleType;
 import parking.exception.ParkingUnavailableException;
-import parking.exception.DoubleParkingException;
+import parking.lot.ParkingLot;
+import parking.enums.ParkingLotAdminType;
+import parking.enums.VehicleType;
 import parking.domain.ParkingSpot;
 
 import java.util.Scanner;
@@ -88,11 +88,11 @@ public class ParkingLotApplication {
                             try {
                                 VehicleType type = VehicleType.valueOf(typeStr);
                                 ParkingSpot spot = lot.parkVehicle(id, type);
-                                System.out.println("Vehicle parked at spot: " + spot.getParkingSpotId());
+                                System.err.println("Vehicle parked at spot: " + spot.getParkingSpotId());
                             } catch (IllegalArgumentException e) {
-                                System.out.println("Invalid vehicle type.");
+                                System.err.println("Invalid vehicle type.");
                             } catch (DoubleParkingException | ParkingUnavailableException e) {
-                                System.out.println("Error: " + e.getMessage());
+                                System.err.println("Error: " + e.getMessage());
                             }
                         }
                         case "3" -> {
