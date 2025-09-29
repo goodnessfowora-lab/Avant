@@ -18,14 +18,21 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Parking lot administrator for lots with regular and compact spots.
+ * Responsible for managing vehicle allocation, removal, and generating summaries.
+ */
 public class RegularCompactLotAdmin implements ParkingLotAdmin {
-    private final Map<ParkingSpotType, List<ParkingSpot>> parkingSpotTypeMap; // spots grouped by type (REGULAR, COMPACT, etc.)
-    private final Map<String, List<ParkingSpot>> vehicleSpotsMap;   // mapping of vehicles to the spots they occupy
+    private final Map<ParkingSpotType, List<ParkingSpot>> parkingSpotTypeMap; // spots grouped by type
+    private final Map<String, List<ParkingSpot>> vehicleSpotsMap;   // vehicles mapped to allocated spots
     private final SpotAllocationStrategy allocationStrategy;
 
     /**
-     * Construct a parking lot with a fixed number of rows and a sequence of spot types per row.
-     * Example rowSequence = "REGULAR, COMPACT"
+     * Constructs a lot administrator with the given row configuration.
+     *
+     * @param numOfRows    number of rows in the lot
+     * @param rowSequence  comma-separated list of spot types per row (e.g., "REGULAR, COMPACT")
+     * @throws IllegalSpotTypeException if the row sequence contains an invalid spot type
      */
     public RegularCompactLotAdmin(int numOfRows, String rowSequence) throws IllegalSpotTypeException {
         this.parkingSpotTypeMap = new HashMap<>();
@@ -34,7 +41,7 @@ public class RegularCompactLotAdmin implements ParkingLotAdmin {
 
         String[] spotArrangement = rowSequence.split(",");
         ParkingSpotType[] validSpotArrangement = new ParkingSpotType[spotArrangement.length];
-        for(int i=0; i<spotArrangement.length; i++) {
+        for (int i = 0; i < spotArrangement.length; i++) {
             try {
                 validSpotArrangement[i] = ParkingSpotType.valueOf(spotArrangement[i].strip());
             } catch (IllegalArgumentException e) {
@@ -48,7 +55,6 @@ public class RegularCompactLotAdmin implements ParkingLotAdmin {
                 ParkingSpotType spotType = validSpotArrangement[col];
                 String spotId = String.format("R%d-%d", row, col + 1);
                 ParkingSpot spot = new ParkingSpot(spotId, spotType);
-                // Add the spot into the master type-based map
                 parkingSpotTypeMap
                         .computeIfAbsent(spotType, k -> new ArrayList<>())
                         .add(spot);
@@ -57,54 +63,58 @@ public class RegularCompactLotAdmin implements ParkingLotAdmin {
     }
 
     /**
-     * Attempts to park a vehicle into the lot.
-     * @param identifier unique identifier of the vehicle
-     * @param vehicleType type of vehicle (CAR, MOTORCYCLE, VAN, etc.)
-     * @return list of allocated parking spots, or null if none available
+     * Parks a vehicle if suitable spots are available.
+     *
+     * @param identifier  unique vehicle identifier
+     * @param vehicleType type of the vehicle
+     * @return list of allocated spots, or {@code null} if none were available
+     * @throws DoubleParkingException     if the vehicle is already parked
+     * @throws ParkingUnavailableException if no suitable spot can be found
      */
-
     @Override
-    public List<ParkingSpot> parkVehicle(String identifier, VehicleType vehicleType) throws DoubleParkingException, ParkingUnavailableException {
-        // If already parked, return existing allocation
+    public List<ParkingSpot> parkVehicle(String identifier, VehicleType vehicleType)
+            throws DoubleParkingException, ParkingUnavailableException {
         if (vehicleSpotsMap.containsKey(identifier)) {
             return vehicleSpotsMap.get(identifier);
         }
 
         Vehicle vehicle = new Vehicle(identifier, vehicleType);
-
-        // Find available spots for the vehicle
         List<ParkingSpot> parkingSpots = allocationStrategy.findParkingSpot(vehicle, parkingSpotTypeMap);
-        if (parkingSpots != null) {
-            // Mark each spot as occupied
-            for (ParkingSpot parkingSpot : parkingSpots) {
-                parkingSpot.assignVehicle(vehicle);
-            }
-            // Track allocation
-            vehicleSpotsMap.put(identifier, parkingSpots);
+
+        if (parkingSpots.isEmpty()) {
+            throw new ParkingUnavailableException("No available spots for vehicle: " + identifier);
         }
+        for (ParkingSpot parkingSpot : parkingSpots) {
+            parkingSpot.assignVehicle(vehicle);
+        }
+        vehicleSpotsMap.put(identifier, parkingSpots);
         return parkingSpots;
     }
 
     /**
-     * Removes a vehicle from the lot and frees its spots.
-     * @param identifier vehicle identifier to remove
+     * Removes a vehicle and frees its allocated spots.
+     *
+     * @param identifier vehicle identifier
      */
     @Override
     public void removeVehicle(String identifier) {
-        // Free all spots allocated to this vehicle
         List<ParkingSpot> usedSpots = vehicleSpotsMap.remove(identifier);
         if (usedSpots != null) {
             usedSpots.forEach(ParkingSpot::removeVehicle);
         }
     }
 
-    /** @return read-only view of all spots grouped by type */
+    /**
+     * @return unmodifiable view of all spots grouped by type
+     */
     @Override
     public Map<ParkingSpotType, List<ParkingSpot>> getSpotsByType() {
         return Collections.unmodifiableMap(parkingSpotTypeMap);
     }
 
-    /** @return read-only view of all vehicles currently parked */
+    /**
+     * @return unmodifiable view of vehicles mapped to their allocated spots
+     */
     @Override
     public Map<String, List<ParkingSpot>> getVehicleSpotsMap() {
         return Collections.unmodifiableMap(vehicleSpotsMap);
@@ -115,8 +125,7 @@ public class RegularCompactLotAdmin implements ParkingLotAdmin {
     // ===============================
 
     /**
-     * Prints the current summary to standard output.
-     * Useful for debugging and demos.
+     * Prints a human-readable summary of the lot.
      */
     @Override
     public void printLotSummary() {
@@ -141,8 +150,9 @@ public class RegularCompactLotAdmin implements ParkingLotAdmin {
     }
 
     /**
-     * Builds a full immutable summary of the lot's current state.
-     * @return ParkingLotSummary object containing all computed stats
+     * Builds an immutable summary of the lot's current state.
+     *
+     * @return snapshot summary object
      */
     @Override
     public ParkingLotSummary generateLotSummary() {
@@ -192,7 +202,4 @@ public class RegularCompactLotAdmin implements ParkingLotAdmin {
 
         return new ParkingLotSummary(total, available, occupied, byType, isFull, isEmpty, vanCount, byRow);
     }
-
-
-
 }

@@ -10,13 +10,13 @@ import parking.exception.ParkingUnavailableException;
 import parking.exception.InvalidParkingSpotIdException;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -91,7 +91,7 @@ public class RegularCompactAllocationStrategyTest {
         Vehicle car = new Vehicle("C2", VehicleType.CAR);
 
         List<ParkingSpot> result = new RegularCompactAllocationStrategy().findParkingSpot(car, map);
-        assertNull(result);
+        assertEquals(Collections.emptyList(), result);
     }
 
     @Test
@@ -103,7 +103,7 @@ public class RegularCompactAllocationStrategyTest {
         Vehicle van = new Vehicle("V2", VehicleType.VAN);
 
         List<ParkingSpot> result = new RegularCompactAllocationStrategy().findParkingSpot(van, map);
-        assertNull(result);
+        assertEquals(Collections.emptyList(), result);
     }
 
     @Test
@@ -120,7 +120,7 @@ public class RegularCompactAllocationStrategyTest {
         Vehicle car = new Vehicle("C3", VehicleType.CAR);
 
         List<ParkingSpot> result = new RegularCompactAllocationStrategy().findParkingSpot(car, map);
-        assertNull(result);
+        assertEquals(Collections.emptyList(), result);
     }
 
     @Test
@@ -162,7 +162,7 @@ public class RegularCompactAllocationStrategyTest {
         Vehicle van = new Vehicle("V4", VehicleType.VAN);
 
         List<ParkingSpot> result = new RegularCompactAllocationStrategy().findParkingSpot(van, map);
-        assertNull(result);
+        assertEquals(Collections.emptyList(), result);
     }
 
     @Test
@@ -190,6 +190,6 @@ public class RegularCompactAllocationStrategyTest {
         Vehicle van = new Vehicle("V6", VehicleType.VAN);
 
         List<ParkingSpot> result = new RegularCompactAllocationStrategy().findParkingSpot(van, map);
-        assertNull(result);
+        assertEquals(Collections.emptyList(), result);
     }
 }

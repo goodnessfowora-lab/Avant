@@ -7,6 +7,7 @@ import parking.enums.ParkingSpotType;
 import parking.enums.VehicleType;
 import parking.exception.DoubleParkingException;
 import parking.exception.IllegalSpotTypeException;
+import parking.exception.ParkingUnavailableException;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -57,11 +57,10 @@ public class ParkingLotAdminTest {
     @Test
     public void testParkVanNeedsTwoAdjacentRegular() throws Exception {
         admin = new RegularCompactLotAdmin(2, "REGULAR,COMPACT,COMPACT");
-        List<ParkingSpot> allocated = admin.parkVehicle("V1", VehicleType.VAN);
-        assertNull(allocated);
+        assertThrows(ParkingUnavailableException.class, () -> admin.parkVehicle("V1", VehicleType.VAN));
 
         admin = new RegularCompactLotAdmin(2, "REGULAR,REGULAR,COMPACT");
-        allocated = admin.parkVehicle("V1", VehicleType.VAN);
+        List<ParkingSpot> allocated = admin.parkVehicle("V1", VehicleType.VAN);
         assertNotNull(allocated);
         assertEquals(2, allocated.size());
         assertEquals(ParkingSpotType.REGULAR, allocated.get(0).getSpotType());
@@ -81,7 +80,7 @@ public class ParkingLotAdminTest {
         admin.parkVehicle("M1", VehicleType.MOTORCYCLE);
         admin.parkVehicle("M2", VehicleType.MOTORCYCLE);
         // Now no spot for another car
-        assertNull(admin.parkVehicle("C3", VehicleType.CAR));
+        assertThrows(ParkingUnavailableException.class, () -> admin.parkVehicle("C3", VehicleType.CAR));
     }
 
     @Test
